@@ -33,7 +33,7 @@ text.each_line do |line|
 	puts line
 	line.gsub!(/\n/,"")
 	output = File.open("#{line}"+".md","w")
-	repository = org+line
+	repository = org+"/"+line
 	client.auto_paginate = true;
 	issues = client.issues repository
 	issues.each do|issue|
