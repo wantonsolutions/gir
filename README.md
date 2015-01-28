@@ -23,10 +23,10 @@ where repolist.txt is a file containing one repository per line, and organizatio
 ex) if you wanted to get the issues from Linus Torvals repolist.txt would be formatted as follows
 
 repolist.txt
-------------
+
 linux
 subsurface
-------------
+
 
 gir.rb would be called as follows
 
