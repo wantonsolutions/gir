@@ -24,9 +24,13 @@ ex) if you wanted to get the issues from Linus Torvals repolist.txt would be for
 
 repolist.txt
 
+<------------>
+
 linux
+
 subsurface
 
+<------------->
 
 gir.rb would be called as follows
 
