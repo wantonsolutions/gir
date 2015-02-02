@@ -43,14 +43,14 @@ optparse.parse!
 
 if options[:markdown]
     labels = {
-        :author => "**Author**",
-        :assignee => "**Assignee**",
-        :labels => "**Labels**" }
+        :author => "**Author:**",
+        :assignee => "**Assignee:**",
+        :labels => "**Labels:**" }
 else
     labels = {
-        :author => "Author",
-        :assignee => "Assignee",
-        :labels => "Labels" }
+        :author => "Author:",
+        :assignee => "Assignee:",
+        :labels => "Labels:" }
 end
 
 if options[:verbose] and options[:markdown]
@@ -114,7 +114,13 @@ ARGF.each_line do |repo|
         end
 
         output << "\n" << labels[:labels]
+        first = true
         issue.labels.each do |label|
+            if not first
+                output << ","
+            else
+                first = false
+            end
             output << " " << label.name
         end
         output << "\n" << issue.body.gsub!(/\r\n?/,"\n") << "\n------\n"
