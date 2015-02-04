@@ -24,7 +24,6 @@ end
 
 ARGF.each_line do |repo|
     repo.gsub!(/[\r\n]/,"")
-    path = File.split repo
     if not client.repository? repo
         if repo != ""
             puts "Repo '" + repo + "' doesn't exist"
@@ -33,7 +32,7 @@ ARGF.each_line do |repo|
             exit
         end
     end
-    scrapeIssues(options, client, repo, path)
+    scrapeIssues(options, client, repo)
 end     
         
 
