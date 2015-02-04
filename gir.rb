@@ -42,12 +42,12 @@ end
 optparse.parse!
 
 if options[:markdown]
-    labels = {
+    headings = {
         :author => "**Author:**",
         :assignee => "**Assignee:**",
         :labels => "**Labels:**" }
 else
-    labels = {
+    headings = {
         :author => "Author:",
         :assignee => "Assignee:",
         :labels => "Labels:" }
@@ -80,8 +80,6 @@ if options[:verbose]
     end
 end
 
-#text=ARGF.read
-#text.gsub!(/\r\n?/,"\n")
 ARGF.each_line do |repo|
     repo.gsub!(/[\r\n]/,"")
     path = File.split repo
@@ -101,33 +99,57 @@ ARGF.each_line do |repo|
         output = File.open("#{repo}"+".md","w")
     end
     client.auto_paginate = true;
+    issueLabels = {}
     issues = client.issues(repo)
     issues.each do|issue|
+        if issue.labels.size > 0
+            name = issue.labels.each.peek.name
+        else
+            name = ""
+        end
+        if not issueLabels.include? name
+            issueLabels[name] = []
+        end
+        issueLabels[name].push(issue)
+    end
+
+    issueLabels.each do|epic|
+        epicName = epic[0]
         if options[:markdown]
             output << "#"
         end
-        output << issue.title << "\n" \
-            << labels[:author] << " " << issue.user.login << "\n" \
-            << labels[:assignee] << " "
-        if issue.assignee 
-            output << issue.assignee.login
-        end
+        output << epicName << "    \n"
 
-        output << "\n" << labels[:labels]
-        first = true
-        issue.labels.each do |label|
-            if not first
-                output << ","
-            else
-                first = false
+        issueLabels[epicName].each do|issue|
+            if options[:markdown]
+                output << "##"
             end
-            output << " " << label.name
+            output << issue.title << "  \n" \
+                << headings[:author] << " " << issue.user.login << "  \n" \
+               << headings[:assignee] << " "
+            if issue.assignee 
+                output << issue.assignee.login
+            end
+    
+            output << "  \n" << headings[:labels]
+            first = true
+            issue.labels.each do |label|
+                if not first
+                    output << ","
+                else
+                    first = false
+                end
+                output << " " << label.name
+            end
+            output << "  \n" << issue.body.gsub!(/\r\n?/,"  \n") << "  \n\n"
         end
-        output << "\n" << issue.body.gsub!(/\r\n?/,"\n") << "\n------\n"
-#        sleep(1);
+        output << "\n------\n"
     end
-    puts "done\n\n"
     output.close
+    if options[:markdown]
+        system("perl ./Markdown.pl " + File.path(output) + " > " +
+               File.path(output).gsub(/\.md$/,".html"))
+    end
 end     
         
 
